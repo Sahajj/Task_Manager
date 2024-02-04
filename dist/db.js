@@ -9,19 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.client = void 0;
 const pg_1 = require("pg");
 // Connecting to Db and Creating the main table
-const client = new pg_1.Client({
+exports.client = new pg_1.Client({
     connectionString: "postgresql://postgres:blackjack@localhost:5432/postgres?sslmode=disable"
 });
 // Creating a Async function that creates a table
 function CreateTable() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield client.connect();
-        const status = yield client.query(`
+        yield exports.client.connect();
+        const status = yield exports.client.query(`
     CREATE TYPE task_status AS ENUM ('Pending', 'Working', 'Done');
     `);
-        const result = yield client.query(`
+        const result = yield exports.client.query(`
         CREATE TABLE tasks (
             taskId SERIAL PRIMARY KEY,
             title VARCHAR(50) NOT NULL,
@@ -35,3 +36,4 @@ function CreateTable() {
     });
 }
 CreateTable();
+// Create a function to Insert data to the table
