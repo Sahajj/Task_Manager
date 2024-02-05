@@ -33,3 +33,23 @@
 - Node.js 
 - Express.js 
 - PostgreSql
+
+## To run the db locally 
+```
+docker run --name my-postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
+
+```
+
+### To connect and check DB
+- make sure you have psql installed or you can run 
+```
+npm install psql
+```
+- after that you should be able to do this
+```
+psql -h localhost -l postgres -U postgres
+```
+- after this it will ask you the password that will be 
+```
+mysecretpassword
+```  
