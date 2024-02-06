@@ -17,19 +17,30 @@ const express_1 = __importDefault(require("express"));
 const db_1 = require("../db");
 exports.TaskRouter = express_1.default.Router();
 exports.TaskRouter.get("/tasks", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    db_1.client.connect();
-    const text = '';
+    const text = 'SELECT * FROM tasks';
     const result = yield db_1.client.query(text);
-    res.status(200).json({
-        message: result
-    });
+    const data = result.rows;
+    if (result === null) {
+        res.status(200).json({
+            message: "Yay No tasks"
+        });
+    }
+    else if (!result) {
+        res.status(400).json({
+            message: "Can't connet to Db"
+        });
+    }
+    else {
+        res.status(200).json({
+            message: data
+        });
+    }
 }));
 exports.TaskRouter.post("/tasks", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const TaskTitle = req.body.title;
     const TaskDesc = req.body.description;
     const DueDate = req.body.DueDate;
     const status = req.body.status;
-    db_1.client.connect();
     const text = 'INSERT INTO tasks(title, description, DueDate, status) VALUES($1, $2, $3, $4) RETURNING *';
     const values = [TaskTitle, TaskDesc, DueDate, status];
     const result = yield db_1.client.query(text, values);
