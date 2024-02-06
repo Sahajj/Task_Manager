@@ -44,6 +44,11 @@ exports.TaskRouter.post("/tasks", (req, res) => __awaiter(void 0, void 0, void 0
     const text = 'INSERT INTO tasks(title, description, DueDate, status) VALUES($1, $2, $3, $4) RETURNING *';
     const values = [TaskTitle, TaskDesc, DueDate, status];
     const result = yield db_1.client.query(text, values);
+    if (!result) {
+        res.status(400).json({
+            message: "wrong Input"
+        });
+    }
     res.status(200).json({
         message: result
     });
