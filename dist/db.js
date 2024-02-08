@@ -36,4 +36,3 @@ function CreateTable() {
     });
 }
 CreateTable();
-// Create a function to Insert data to the table

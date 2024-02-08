@@ -41,15 +41,18 @@ docker run --name my-postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5
 ```
 
 ### To connect and check DB
-- make sure you have psql installed or you can run 
+- Make sure you have psql installed or you can run 
 ```
 npm install psql
 ```
-- after that you should be able to do this
+- After you have psql locally you can start the psql cli using the command below.
+- Here **-h** is the host name of the machine where the PostgreSQL server running on a specific host.
+- **-l** This is used to list all the Db on the PostgreSQL server that you have access to.
+- **-U** This is used for the username that you want to connect as and the password should be the set password in the Env Variable.
 ```
 psql -h localhost -l postgres -U postgres
 ```
-- after this it will ask you the password that will be 
+- After this it will ask you the password that will be in out case. 
 ```
 mysecretpassword
 ```  

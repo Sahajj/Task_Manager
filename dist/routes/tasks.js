@@ -14,8 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskRouter = void 0;
 const express_1 = __importDefault(require("express"));
+const zod_1 = __importDefault(require("zod"));
 const db_1 = require("../db");
 exports.TaskRouter = express_1.default.Router();
+const PostSchema = zod_1.default.object({
+    title: zod_1.default.string(),
+    description: zod_1.default.string(),
+    DueDate: zod_1.default.date(),
+});
 exports.TaskRouter.get("/tasks", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const text = 'SELECT * FROM tasks';
     const result = yield db_1.client.query(text);
@@ -27,7 +33,7 @@ exports.TaskRouter.get("/tasks", (req, res) => __awaiter(void 0, void 0, void 0,
     }
     else if (!result) {
         res.status(400).json({
-            message: "Can't connet to Db"
+            message: "Can't connect to Db"
         });
     }
     else {
