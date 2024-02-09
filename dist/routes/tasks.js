@@ -17,10 +17,12 @@ const express_1 = __importDefault(require("express"));
 const zod_1 = __importDefault(require("zod"));
 const db_1 = require("../db");
 exports.TaskRouter = express_1.default.Router();
+const StatusZod = zod_1.default.enum(["Pending", "Working", "Done"]);
 const PostSchema = zod_1.default.object({
     title: zod_1.default.string(),
     description: zod_1.default.string(),
     DueDate: zod_1.default.date(),
+    status: StatusZod,
 });
 exports.TaskRouter.get("/tasks", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const text = 'SELECT * FROM tasks';
@@ -47,15 +49,18 @@ exports.TaskRouter.post("/tasks", (req, res) => __awaiter(void 0, void 0, void 0
     const TaskDesc = req.body.description;
     const DueDate = req.body.DueDate;
     const status = req.body.status;
-    const text = 'INSERT INTO tasks(title, description, DueDate, status) VALUES($1, $2, $3, $4) RETURNING *';
-    const values = [TaskTitle, TaskDesc, DueDate, status];
-    const result = yield db_1.client.query(text, values);
-    if (!result) {
-        res.status(400).json({
-            message: "wrong Input"
+    const { success } = PostSchema.safeParse(req.body);
+    if (!success) {
+        res.status(411).json({
+            message: "Incorrect Inputs"
         });
     }
-    res.status(200).json({
-        message: result
-    });
+    else {
+        const text = 'INSERT INTO tasks(title, description, DueDate, status) VALUES($1, $2, $3, $4) RETURNING *';
+        const values = [TaskTitle, TaskDesc, DueDate, status];
+        const result = yield db_1.client.query(text, values);
+        res.status(200).json({
+            message: result
+        });
+    }
 }));
