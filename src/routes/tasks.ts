@@ -7,7 +7,7 @@ const StatusZod = zod.enum(["Pending", "Working", "Done"]);
 const PostSchema = zod.object({
     title: zod.string(),
     description: zod.string(),
-    DueDate: zod.date(),
+    DueDate: zod.coerce.date(),
     status: StatusZod,
 })
 
@@ -53,3 +53,11 @@ TaskRouter.post("/tasks", async (req, res) => {
         })
     }
 })
+
+//Get by ID of task /tasks/:id
+
+
+// Put / Update task details /tasks/:id  
+
+
+// Delete a task /tasks/:id

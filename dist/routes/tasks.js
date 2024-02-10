@@ -21,7 +21,7 @@ const StatusZod = zod_1.default.enum(["Pending", "Working", "Done"]);
 const PostSchema = zod_1.default.object({
     title: zod_1.default.string(),
     description: zod_1.default.string(),
-    DueDate: zod_1.default.date(),
+    DueDate: zod_1.default.coerce.date(),
     status: StatusZod,
 });
 exports.TaskRouter.get("/tasks", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
