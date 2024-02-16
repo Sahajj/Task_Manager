@@ -54,7 +54,7 @@ TaskRouter.post("/tasks", async (req, res) => {
     }
 })
 
-//zod schema
+//zod schema for :id 
 
 const idSchema = zod.object({
     id: zod.number().min(1)
@@ -94,7 +94,77 @@ TaskRouter.get("/tasks/:id", async (req, res) => {
     }
 });
 
-// Put / Update task details /tasks/:id  
+// zOd Put schema
+const PutSchema = zod.object({
+    title: zod.string().optional(),
+    description: zod.string().optional(),
+    DueDate: zod.coerce.date().optional(),
+    status: StatusZod.optional(),
+})
 
+
+
+// Put / Update task details /tasks/:id  
+TaskRouter.put("/tasks/:id", async (req, res) => {
+    const { id }= req.params;
+    const { success } = idSchema.safeParse({id: +id});
+    if(!success){
+        return res.status(411).json({
+            message: "Invalid ID"
+        })
+    } else {
+        const { success }  = PutSchema.safeParse(req.body)
+        if(!success) {
+            return res.status(411).json({
+                message: "Invalid Update"
+            })
+        } else {
+            const TaskTitle: String = req.body.title;
+            const TaskDesc: String = req.body.description;
+            const DueDate: Number = req.body.DueDate;
+            const status: String = req.body.status;
+            try {
+                const text = `
+                UPDATE tasks SET 
+                    title = COALESCE($2, title),
+                    description = COALESCE($3, description),
+                    DueDate = COALESCE($4, DueDate),
+                    status = COALESCE($5, status)
+                WHERE
+                    taskId = $1
+                `;
+                const values = [+id, TaskTitle, TaskDesc, DueDate, status]
+                const result = await client.query(text, values);
+
+                if(result.rowCount === 0) {
+                    return res.status(404).json({
+                        message: "Task not Found "
+                    });
+                } else {
+                    return res.status(200).json({
+                        message: "Task Updated"
+                    });
+                }
+            } catch (error) {
+                console.error("Database  Error:", error);
+                return res.status(500).json({
+                    message: "Internal Server Error"
+                });
+            }
+        }
+
+    }
+})
 
 // Delete a task /tasks/:id
+TaskRouter.delete("/tasks/:id", async (req, res) => {
+    const { id }= req.params;
+    const { success } = idSchema.safeParse({id: +id});
+    if(!success){
+        res.status(411).json({
+            message: "Invalid ID"
+        })
+    } else {
+        
+    }
+})

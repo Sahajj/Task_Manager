@@ -64,7 +64,7 @@ exports.TaskRouter.post("/tasks", (req, res) => __awaiter(void 0, void 0, void 0
         });
     }
 }));
-//zod schema
+//zod schema for :id 
 const idSchema = zod_1.default.object({
     id: zod_1.default.number().min(1)
 });
@@ -101,5 +101,75 @@ exports.TaskRouter.get("/tasks/:id", (req, res) => __awaiter(void 0, void 0, voi
         }
     }
 }));
+// zOd Put schema
+const PutSchema = zod_1.default.object({
+    title: zod_1.default.string().optional(),
+    description: zod_1.default.string().optional(),
+    DueDate: zod_1.default.coerce.date().optional(),
+    status: StatusZod.optional(),
+});
 // Put / Update task details /tasks/:id  
+exports.TaskRouter.put("/tasks/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { success } = idSchema.safeParse({ id: +id });
+    if (!success) {
+        return res.status(411).json({
+            message: "Invalid ID"
+        });
+    }
+    else {
+        const { success } = PutSchema.safeParse(req.body);
+        if (!success) {
+            return res.status(411).json({
+                message: "Invalid Update"
+            });
+        }
+        else {
+            const TaskTitle = req.body.title;
+            const TaskDesc = req.body.description;
+            const DueDate = req.body.DueDate;
+            const status = req.body.status;
+            try {
+                const text = `
+                UPDATE tasks SET 
+                    title = COALESCE($2, title),
+                    description = COALESCE($3, description),
+                    DueDate = COALESCE($4, DueDate),
+                    status = COALESCE($5, status)
+                WHERE
+                    taskId = $1
+                `;
+                const values = [+id, TaskTitle, TaskDesc, DueDate, status];
+                const result = yield db_1.client.query(text, values);
+                if (result.rowCount === 0) {
+                    return res.status(404).json({
+                        message: "Task not Found "
+                    });
+                }
+                else {
+                    return res.status(200).json({
+                        message: "Task Updated"
+                    });
+                }
+            }
+            catch (error) {
+                console.error("Database  Error:", error);
+                return res.status(500).json({
+                    message: "Internal Server Error"
+                });
+            }
+        }
+    }
+}));
 // Delete a task /tasks/:id
+exports.TaskRouter.delete("/tasks/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { success } = idSchema.safeParse({ id: +id });
+    if (!success) {
+        res.status(411).json({
+            message: "Invalid ID"
+        });
+    }
+    else {
+    }
+}));
