@@ -18,7 +18,7 @@
     - Delete a task
 3. DataBase Integration
     - Using TypeScript with Node.js backend
-    - Connecting to a Postgresql database to sore task and Description
+    - Connecting to a Postgresql database to store task and Description
 4. Validation 
     - Implementing input validation and updating tasks.
     - Ensure that required fields are provided, and data are valid.
