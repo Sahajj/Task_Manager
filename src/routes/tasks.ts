@@ -162,9 +162,31 @@ TaskRouter.delete("/tasks/:id", async (req, res) => {
     const { success } = idSchema.safeParse({id: +id});
     if(!success){
         res.status(411).json({
-            message: "Invalid ID"
-        })
+            message: "Invalid ID. Please enter a number."
+        });
     } else {
-        
+        try {
+            const text = 'SELECT * FROM tasks WHERE taskId = $1';
+            const value = [+id];
+            const result = await client.query(text, value);
+
+            if (result.rows.length === 0) {
+                res.status(404).json({
+                    message: "No task found with the provided ID."
+                });
+            } else {
+                const deleteText = 'DELETE FROM tasks WHERE  taskId = $1';
+                const deleteResult = await client.query(deleteText, value);   
+
+                res.status(200).json({
+                    message: "Task Deleted"
+                });
+            }
+        } catch (error) {
+            console.error("Database Error:", error);
+            res.status(500).json({
+                message: "Internal Server Error"
+            });
+        }
     }
-})
+});
